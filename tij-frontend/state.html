@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>State — Traveler's Info Junction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== NAVBAR ===================== -->
+<header class="navbar scrolled" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">🪷</span>
+      <span class="logo-text">Traveler's<em>Info Junction</em></span>
+    </a>
+    <nav class="nav-links">
+      <a href="explore.html">Explore</a>
+      <a href="planner.html">AI Planner</a>
+      <a href="wishlist.html">Wishlist</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-search">
+      <input type="text" id="globalSearch" placeholder="Search states, food, hotels..." autocomplete="off" />
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">☀</button>
+      <span id="userGreeting" class="user-greeting" style="display:none;"></span>
+      <button class="btn btn-ghost" id="loginBtn">Log in</button>
+      <button class="btn btn-ghost" id="logoutBtn" style="display:none;">Log out</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== STATE HERO ===================== -->
+<section class="state-hero" id="stateHero"></section>
+
+<!-- ===================== OVERVIEW + QUICK FACTS ===================== -->
+<section class="state-section">
+  <h2 class="section-title left">About <span id="stateNameInline"></span></h2>
+  <p class="state-overview" id="stateOverview"></p>
+  <div class="quick-facts" id="quickFacts"></div>
+</section>
+
+<!-- ===================== CATEGORY NAV CARDS ===================== -->
+<section class="state-section alt">
+  <h2 class="section-title left">Browse by Category</h2>
+  <p class="page-subtitle" style="text-align:left; margin-top:-8px; margin-bottom:10px;">
+    Curated YouTube videos for everything you need to plan your trip.
+  </p>
+  <div class="category-grid" id="categoryGrid"></div>
+</section>
+
+<!-- ===================== VIDEO SECTIONS (one per category) ===================== -->
+<div id="videoSections"></div>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer">
+  <div class="footer-frame">
+    <p class="footer-logo">Traveler's Info Junction</p>
+    <p class="footer-copy">© 2026 Traveler's Info Junction. Made with ♥ for India.</p>
+  </div>
+</footer>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authOverlay">
+  <div class="modal-card">
+    <button class="modal-close" id="closeModal">&times;</button>
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-tab="login">Log in</button>
+      <button class="modal-tab" data-tab="signup">Sign up</button>
+    </div>
+    <form id="loginForm" class="modal-form">
+      <label>Email</label>
+      <input type="email" id="loginEmail" required placeholder="you@example.com" />
+      <label>Password</label>
+      <input type="password" id="loginPassword" required placeholder="••••••••" />
+      <p class="form-error" id="loginError"></p>
+      <button type="submit" class="btn btn-primary full">Log in</button>
+    </form>
+    <form id="signupForm" class="modal-form" style="display:none;">
+      <label>Name</label>
+      <input type="text" id="signupName" required placeholder="Your name" />
+      <label>Email</label>
+      <input type="email" id="signupEmail" required placeholder="you@example.com" />
+      <label>Password</label>
+      <input type="password" id="signupPassword" required placeholder="At least 6 characters" minlength="6" />
+      <p class="form-error" id="signupError"></p>
+      <button type="submit" class="btn btn-primary full">Create account</button>
+    </form>
+  </div>
+</div>
+
+<script src="states-data.js"></script>
+<script src="search-shared.js"></script>
+<script src="auth.js"></script>
+<script src="wishlist-shared.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const stateId = params.get('state');
+  const state = STATES.find(s => s.id === stateId);
+
+  if (!state) {
+    document.body.innerHTML = `
+      <div style="padding:120px 20px; text-align:center;">
+        <h2 style="font-family:'Fraunces',serif;">State not found</h2>
+        <p style="margin:14px 0;">We don't have a page for "${stateId}" yet.</p>
+        <a href="explore.html" class="btn btn-primary" style="text-decoration:none; display:inline-block;">Back to Explore</a>
+      </div>`;
+  } else {
+    document.title = `${state.name} — Traveler's Info Junction`;
+    document.getElementById('stateNameInline').textContent = state.name;
+
+    // Hero
+    document.getElementById('stateHero').style.backgroundImage =
+      `linear-gradient(180deg, rgba(15,30,60,0.35), rgba(15,30,60,0.92)), url('${state.heroImage}')`;
+    document.getElementById('stateHero').innerHTML = `
+      <div class="state-hero-text">
+        <p class="eyebrow">— ${state.tagline} —</p>
+        <h1>${state.name}</h1>
+      </div>`;
+
+    // Overview + quick facts
+    document.getElementById('stateOverview').textContent = state.overview;
+    document.getElementById('quickFacts').innerHTML = `
+      <div class="fact"><strong>Best Time</strong><span>${state.bestTime}</span></div>
+      <div class="fact"><strong>Budget</strong><span>${state.budget}</span></div>
+      <div class="fact"><strong>Languages</strong><span>${state.languages}</span></div>
+      <div class="fact"><strong>Weather</strong><span>${state.weather}</span></div>
+      <div class="fact"><strong>Nearby Airports</strong><span>${state.nearestAirports}</span></div>
+    `;
+
+    // Category nav cards - clicking scrolls to that section
+    document.getElementById('categoryGrid').innerHTML = CATEGORIES.map(cat => `
+      <a href="#section-${cat.key}" class="category-card">
+        <span class="category-icon">${cat.icon}</span>
+        <span class="category-label">${cat.label}</span>
+      </a>
+    `).join('');
+
+    // One video section per category
+    document.getElementById('videoSections').innerHTML = CATEGORIES.map((cat, i) => `
+      <section class="state-section ${i % 2 === 1 ? 'alt' : ''}" id="section-${cat.key}">
+        <h2 class="section-title left">${cat.icon} ${cat.label}</h2>
+        <div class="video-grid">
+          ${state[cat.key].map(v => `
+            <div class="video-card">
+              <a href="${v.url}" target="_blank" class="video-thumb-wrap">
+                <img src="${v.thumbnail}" alt="${v.title}" class="video-thumb" />
+                <span class="play-overlay">▶</span>
+              </a>
+              <div class="video-info">
+                <h4>${v.title}</h4>
+                <span class="video-channel">${v.channel}</span>
+                <a href="${v.url}" target="_blank" class="btn btn-outline watch-btn">Watch on YouTube</a>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+    `).join('');
+  }
+</script>
+</body>
+</html>

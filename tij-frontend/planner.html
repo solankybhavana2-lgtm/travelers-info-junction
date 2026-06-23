@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Planner — Traveler's Info Junction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="navbar scrolled" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">🪷</span>
+      <span class="logo-text">Traveler's<em>Info Junction</em></span>
+    </a>
+    <nav class="nav-links">
+      <a href="explore.html">Explore</a>
+      <a href="planner.html" class="active-link">AI Planner</a>
+      <a href="wishlist.html">Wishlist</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-search">
+      <input type="text" id="globalSearch" placeholder="Search states, food, hotels..." autocomplete="off" />
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">☀</button>
+      <span id="userGreeting" class="user-greeting" style="display:none;"></span>
+      <button class="btn btn-ghost" id="loginBtn">Log in</button>
+      <button class="btn btn-ghost" id="logoutBtn" style="display:none;">Log out</button>
+    </div>
+  </div>
+</header>
+
+<section class="page-header">
+  <p class="eyebrow center">— Plan Smarter —</p>
+  <h1 class="section-title">AI Travel Planner</h1>
+  <p class="page-subtitle">Tell us your destination, budget & style — get a day-wise plan with curated videos for each stop.</p>
+</section>
+
+<section class="planner-section">
+  <form id="plannerForm" class="planner-form">
+    <div class="planner-field">
+      <label>📍 Destination State</label>
+      <select id="destState" required>
+        <option value="" disabled selected>Choose a state</option>
+      </select>
+    </div>
+
+    <div class="planner-field">
+      <label>💰 Budget</label>
+      <div class="chip-group" data-name="budget">
+        <button type="button" class="chip" data-value="5000">₹5,000</button>
+        <button type="button" class="chip" data-value="10000">₹10,000</button>
+        <button type="button" class="chip" data-value="20000">₹20,000</button>
+        <button type="button" class="chip" data-value="50000">₹50,000+</button>
+      </div>
+    </div>
+
+    <div class="planner-field">
+      <label>📅 Number of Days</label>
+      <div class="chip-group" data-name="days">
+        <button type="button" class="chip" data-value="2">2 Days</button>
+        <button type="button" class="chip" data-value="3">3 Days</button>
+        <button type="button" class="chip" data-value="5">5 Days</button>
+        <button type="button" class="chip" data-value="7">7 Days</button>
+        <button type="button" class="chip" data-value="10">10 Days</button>
+      </div>
+    </div>
+
+    <div class="planner-field">
+      <label>🧳 Travel Type</label>
+      <div class="chip-group" data-name="type">
+        <button type="button" class="chip" data-value="Solo">🧍 Solo</button>
+        <button type="button" class="chip" data-value="Friends">👯 Friends</button>
+        <button type="button" class="chip" data-value="Family">👨‍👩‍👧 Family</button>
+        <button type="button" class="chip" data-value="Couple">💑 Couple</button>
+        <button type="button" class="chip" data-value="Adventure">⛰️ Adventure</button>
+        <button type="button" class="chip" data-value="Food">🍛 Food</button>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary full" style="margin-top:10px;">Generate Plan <span class="btn-arrow">›</span></button>
+  </form>
+
+  <div id="plannerResult" class="planner-result"></div>
+</section>
+
+<footer class="footer">
+  <div class="footer-frame">
+    <p class="footer-logo">Traveler's Info Junction</p>
+    <p class="footer-copy">© 2026 Traveler's Info Junction. Made with ♥ for India.</p>
+  </div>
+</footer>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authOverlay">
+  <div class="modal-card">
+    <button class="modal-close" id="closeModal">&times;</button>
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-tab="login">Log in</button>
+      <button class="modal-tab" data-tab="signup">Sign up</button>
+    </div>
+    <form id="loginForm" class="modal-form">
+      <label>Email</label>
+      <input type="email" id="loginEmail" required placeholder="you@example.com" />
+      <label>Password</label>
+      <input type="password" id="loginPassword" required placeholder="••••••••" />
+      <p class="form-error" id="loginError"></p>
+      <button type="submit" class="btn btn-primary full">Log in</button>
+    </form>
+    <form id="signupForm" class="modal-form" style="display:none;">
+      <label>Name</label>
+      <input type="text" id="signupName" required placeholder="Your name" />
+      <label>Email</label>
+      <input type="email" id="signupEmail" required placeholder="you@example.com" />
+      <label>Password</label>
+      <input type="password" id="signupPassword" required placeholder="At least 6 characters" minlength="6" />
+      <p class="form-error" id="signupError"></p>
+      <button type="submit" class="btn btn-primary full">Create account</button>
+    </form>
+  </div>
+</div>
+
+<script src="states-data.js"></script>
+<script src="search-shared.js"></script>
+<script src="auth.js"></script>
+<script src="wishlist-shared.js"></script>
+<script>
+  // Populate state dropdown from STATES data
+  const destSelect = document.getElementById('destState');
+  destSelect.innerHTML += STATES.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+  // Chip selection logic - one active chip per group
+  document.querySelectorAll('.chip-group').forEach(group => {
+    group.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+
+  function getSelected(groupName) {
+    const active = document.querySelector(`.chip-group[data-name="${groupName}"] .chip.active`);
+    return active ? active.dataset.value : null;
+  }
+
+  // Simple deterministic "AI-style" plan generator using real state data
+  document.getElementById('plannerForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const stateId = destSelect.value;
+    const budget = getSelected('budget');
+    const days = parseInt(getSelected('days'));
+    const type = getSelected('type');
+    const state = STATES.find(s => s.id === stateId);
+
+    if (!state || !budget || !days || !type) {
+      alert('Please fill in every field before generating a plan.');
+      return;
+    }
+
+    const dailyBudget = Math.round(budget / days);
+    const allPlaces = [...state.famousPlaces, ...state.historicPlaces];
+    const allFood = state.streetFood;
+    const allShopping = state.streetShopping;
+
+    let dayCards = '';
+    for (let d = 1; d <= days; d++) {
+      const place = allPlaces[(d - 1) % allPlaces.length];
+      const food = allFood[(d - 1) % allFood.length];
+      const shop = allShopping[(d - 1) % allShopping.length];
+
+      dayCards += `
+        <div class="plan-day-card">
+          <div class="plan-day-num">Day ${d}</div>
+          <div class="plan-day-body">
+            <p><strong>Morning:</strong> Visit <a href="${place.url}" target="_blank">${place.title}</a> ▶</p>
+            <p><strong>Afternoon:</strong> Try local food — <a href="${food.url}" target="_blank">${food.title}</a> ▶</p>
+            <p><strong>Evening:</strong> Browse shopping — <a href="${shop.url}" target="_blank">${shop.title}</a> ▶</p>
+            <p class="plan-cost">Estimated cost: ₹${dailyBudget.toLocaleString('en-IN')}</p>
+          </div>
+        </div>`;
+    }
+
+    document.getElementById('plannerResult').innerHTML = `
+      <div class="plan-summary">
+        <h2 class="section-title left">${days}-Day ${type} Trip to ${state.name}</h2>
+        <p class="page-subtitle" style="text-align:left;">Total budget: ₹${parseInt(budget).toLocaleString('en-IN')} • ${state.bestTime}</p>
+      </div>
+      <div class="plan-days-grid">${dayCards}</div>
+      <div class="plan-travel-guide">
+        <h3>🎥 Full Travel Guide for ${state.name}</h3>
+        <a href="${state.travelGuides[0].url}" target="_blank" class="btn btn-outline">Watch on YouTube ▶</a>
+      </div>
+    `;
+    document.getElementById('plannerResult').scrollIntoView({ behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>

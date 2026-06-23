@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>About — Traveler's Info Junction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="navbar scrolled" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">🪷</span>
+      <span class="logo-text">Traveler's<em>Info Junction</em></span>
+    </a>
+    <nav class="nav-links">
+      <a href="explore.html">Explore</a>
+      <a href="planner.html">AI Planner</a>
+      <a href="wishlist.html">Wishlist</a>
+      <a href="about.html" class="active-link">About</a>
+    </nav>
+    <div class="nav-search">
+      <input type="text" id="globalSearch" placeholder="Search states, food, hotels..." autocomplete="off" />
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">☀</button>
+      <span id="userGreeting" class="user-greeting" style="display:none;"></span>
+      <button class="btn btn-ghost" id="loginBtn">Log in</button>
+      <button class="btn btn-ghost" id="logoutBtn" style="display:none;">Log out</button>
+    </div>
+  </div>
+</header>
+
+<section class="page-header">
+  <p class="eyebrow center">— Our Story —</p>
+  <h1 class="section-title">About Traveler's Info Junction</h1>
+  <p class="page-subtitle">One place for everything you'd otherwise search YouTube for, separately, every time you plan a trip.</p>
+</section>
+
+<section class="state-section">
+  <h2 class="section-title left">The Problem We Solve</h2>
+  <p class="state-overview">
+    When planning a trip to an Indian state, travelers usually open YouTube five different times —
+    once for tourist places, once for hotels, once for street food, once for shopping, once for
+    historic sites. Traveler's Info Junction collects the best videos for each of these into one
+    organized place, per state, so you stop switching tabs and start planning.
+  </p>
+</section>
+
+<section class="state-section alt">
+  <h2 class="section-title left">Mission &amp; Vision</h2>
+  <div class="info-grid" style="margin-top:30px;">
+    <div class="info-card">
+      <h4>🎯 Mission</h4>
+      <p>Make trip research effortless by curating the best existing travel content instead of asking you to create more of it.</p>
+    </div>
+    <div class="info-card">
+      <h4>🌅 Vision</h4>
+      <p>Cover every Indian state with a living, growing library of curated videos — becoming the first stop before any trip.</p>
+    </div>
+    <div class="info-card">
+      <h4>🤝 Approach</h4>
+      <p>No bookings, no reviews, no noise — just organized, trustworthy video content and the practical facts you need.</p>
+    </div>
+  </div>
+</section>
+
+<section class="state-section">
+  <h2 class="section-title left">Built With</h2>
+  <div class="quick-facts" style="margin-top:30px;">
+    <div class="fact"><strong>Frontend</strong><span>HTML, CSS, JavaScript</span></div>
+    <div class="fact"><strong>Backend</strong><span>Node.js, Express</span></div>
+    <div class="fact"><strong>Database</strong><span>MongoDB</span></div>
+    <div class="fact"><strong>Auth</strong><span>JWT + bcrypt</span></div>
+    <div class="fact"><strong>Content</strong><span>Curated YouTube videos</span></div>
+  </div>
+</section>
+
+<section class="stat-strip">
+  <div class="stat"><strong id="statStates">5</strong><span>States Covered</span></div>
+  <div class="stat"><strong id="statVideos">0</strong><span>Curated Videos</span></div>
+  <div class="stat"><strong>6</strong><span>Categories per State</span></div>
+  <div class="stat"><strong>100%</strong><span>Booking-Free</span></div>
+</section>
+
+<footer class="footer">
+  <div class="footer-frame">
+    <p class="footer-logo">Traveler's Info Junction</p>
+    <p class="footer-copy">© 2026 Traveler's Info Junction. Made with ♥ for India.</p>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="authOverlay">
+  <div class="modal-card">
+    <button class="modal-close" id="closeModal">&times;</button>
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-tab="login">Log in</button>
+      <button class="modal-tab" data-tab="signup">Sign up</button>
+    </div>
+    <form id="loginForm" class="modal-form">
+      <label>Email</label>
+      <input type="email" id="loginEmail" required placeholder="you@example.com" />
+      <label>Password</label>
+      <input type="password" id="loginPassword" required placeholder="••••••••" />
+      <p class="form-error" id="loginError"></p>
+      <button type="submit" class="btn btn-primary full">Log in</button>
+    </form>
+    <form id="signupForm" class="modal-form" style="display:none;">
+      <label>Name</label>
+      <input type="text" id="signupName" required placeholder="Your name" />
+      <label>Email</label>
+      <input type="email" id="signupEmail" required placeholder="you@example.com" />
+      <label>Password</label>
+      <input type="password" id="signupPassword" required placeholder="At least 6 characters" minlength="6" />
+      <p class="form-error" id="signupError"></p>
+      <button type="submit" class="btn btn-primary full">Create account</button>
+    </form>
+  </div>
+</div>
+
+<script src="states-data.js"></script>
+<script src="search-shared.js"></script>
+<script src="auth.js"></script>
+<script>
+  // Compute real stats from the data file instead of hardcoding
+  document.getElementById('statStates').textContent = STATES.length;
+  const totalVideos = STATES.reduce((sum, s) =>
+    sum + CATEGORIES.reduce((catSum, cat) => catSum + (s[cat.key]?.length || 0), 0), 0);
+  document.getElementById('statVideos').textContent = totalVideos + '+';
+</script>
+</body>
+</html>
